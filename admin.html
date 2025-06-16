@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель Лапули</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #a29bfe;
+            --accent-color: #fd79a8;
+            --text-color: #2d3436;
+            --light-bg: #f9f9f9;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .admin-panel {
+            display: none;
+            padding: 20px;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .users-table {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .broadcast-form {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Кнопка возврата на главную -->
+    <a href="index.html" class="btn btn-primary back-button">
+        <i class="fas fa-arrow-left"></i> На главную
+    </a>
+
+    <!-- Форма входа -->
+    <div class="login-container" id="loginForm">
+        <h2 class="text-center mb-4">Вход в админ-панель</h2>
+        <form onsubmit="return handleLogin(event)">
+            <div class="mb-3">
+                <label for="login" class="form-label">Логин</label>
+                <input type="text" class="form-control" id="login" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Пароль</label>
+                <input type="password" class="form-control" id="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Войти</button>
+        </form>
+    </div>
+
+    <!-- Админ-панель -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="container">
+            <h2 class="mb-4">Админ-панель Лапули</h2>
+            
+            <!-- Статистика -->
+            <div class="stats-card">
+                <h3>Статистика</h3>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Всего пользователей</h5>
+                                <p class="card-text" id="totalUsers">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Навигация -->
+            <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="users-tab" data-bs-toggle="tab" href="#users" role="tab">Пользователи</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="broadcast-tab" data-bs-toggle="tab" href="#broadcast" role="tab">Рассылка</a>
+                </li>
+            </ul>
+
+            <!-- Содержимое вкладок -->
+            <div class="tab-content" id="adminTabContent">
+                <!-- Список пользователей -->
+                <div class="tab-pane fade show active" id="users" role="tabpanel">
+                    <div class="users-table">
+                        <h3>Список пользователей</h3>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Имя пользователя</th>
+                                        <th>Имя</th>
+                                        <th>Дата регистрации</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersList">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Форма рассылки -->
+                <div class="tab-pane fade" id="broadcast" role="tabpanel">
+                    <div class="broadcast-form">
+                        <h3>Отправить рассылку</h3>
+                        <form onsubmit="return handleBroadcast(event)">
+                            <div class="mb-3">
+                                <label for="message" class="form-label">Сообщение</label>
+                                <textarea class="form-control" id="message" rows="5" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Отправить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Данные администраторов
+        const ADMIN_CREDENTIALS = {
+            "lapuly_admin": "lapuly2024!",
+            "quest_master": "quest2024!",
+            "bot_operator": "operator2024!"
+        };
+
+        // Данные пользователей (для демонстрации)
+        const DEMO_USERS = [
+            {
+                user_id: 1,
+                username: "user1",
+                first_name: "Иван",
+                join_date: "2024-01-01"
+            },
+            {
+                user_id: 2,
+                username: "user2",
+                first_name: "Мария",
+                join_date: "2024-01-02"
+            },
+            {
+                user_id: 3,
+                username: "user3",
+                first_name: "Алексей",
+                join_date: "2024-01-03"
+            }
+        ];
+
+        // Обработка входа
+        function handleLogin(event) {
+            event.preventDefault();
+            const login = document.getElementById('login').value;
+            const password = document.getElementById('password').value;
+
+            if (ADMIN_CREDENTIALS[login] === password) {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                loadUsers();
+            } else {
+                alert('Неверный логин или пароль');
+            }
+            return false;
+        }
+
+        // Загрузка списка пользователей
+        function loadUsers() {
+            // В реальном приложении здесь был бы запрос к API
+            document.getElementById('totalUsers').textContent = DEMO_USERS.length;
+            const usersList = document.getElementById('usersList');
+            usersList.innerHTML = '';
+            DEMO_USERS.forEach(user => {
+                usersList.innerHTML += `
+                    <tr>
+                        <td>${user.user_id}</td>
+                        <td>${user.username || '-'}</td>
+                        <td>${user.first_name || '-'}</td>
+                        <td>${user.join_date}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Обработка рассылки
+        function handleBroadcast(event) {
+            event.preventDefault();
+            const message = document.getElementById('message').value;
+            
+            // В реальном приложении здесь был бы запрос к API
+            alert('В реальном приложении здесь будет отправка сообщений через бота');
+            document.getElementById('message').value = '';
+            return false;
+        }
+    </script>
+</body>
+</html> 
